@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Members - Hostel Expense Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Reusable Navigation Bar -->
+  <div id="navbar-container"></div>
+
+  <main class="py-4">
+    <div class="container-fluid px-lg-4">
+
+      <div id="alert-container"></div>
+
+      <!-- Header with Add Student and Add by Email buttons -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+          <h3 class="fw-bold mb-1">Hostel Members & Students</h3>
+          <p class="text-muted small mb-0">Manage registered students, USN / Student IDs, departments, and monthly contributions.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-primary btn-sm" onclick="openAddStudentModal()">
+            <i class="bi bi-person-plus-fill me-1"></i> Add Student
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="openAddMemberModal()">
+            <i class="bi bi-envelope-plus me-1"></i> Add Existing by Email
+          </button>
+        </div>
+      </div>
+
+      <!-- Members Table Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Student Name</th>
+                <th>Student ID / USN</th>
+                <th>Department</th>
+                <th>Email Address</th>
+                <th>Role</th>
+                <th>Joined On</th>
+                <th>Monthly Contribution</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="members-table-body">
+              <tr>
+                <td colspan="9" class="text-center text-muted py-4">Loading members...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Add New Student -->
+  <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="addStudentModalLabel">
+            <i class="bi bi-person-plus-fill text-primary me-2"></i>Add New Student
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="add-student-form">
+          <div class="modal-body py-3">
+            <div id="modal-student-alert"></div>
+            
+            <div class="mb-3">
+              <label for="student-name" class="form-label fw-semibold">Student Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="student-name" placeholder="e.g. Rahul Kumar" required minlength="2">
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label for="student-usn" class="form-label fw-semibold">Student ID / USN <span class="text-danger">*</span></label>
+                <input type="text" class="form-control text-uppercase" id="student-usn" placeholder="e.g. 4NI20CS045" required minlength="2">
+              </div>
+              <div class="col-6">
+                <label for="student-department" class="form-label fw-semibold">Department / Class <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="student-department" placeholder="e.g. Computer Science" required minlength="2">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="student-email" class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" id="student-email" placeholder="e.g. rahul@hostel.com" required>
+              <div class="form-text">Used for sign in. Default login password is <code>password123</code>.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="student-role" class="form-label fw-semibold">Role in Hostel</label>
+              <select class="form-select" id="student-role">
+                <option value="MEMBER" selected>MEMBER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="add-student-submit-btn" class="btn btn-primary px-3">
+              <span id="add-student-btn-text"><i class="bi bi-check-circle me-1"></i> Save Student</span>
+              <span id="add-student-btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Change Student Name -->
+  <div class="modal fade" id="editNameModal" tabindex="-1" aria-labelledby="editNameModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="editNameModalLabel">
+            <i class="bi bi-pencil-square text-primary me-2"></i>Change Student Name
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="edit-name-form">
+          <div class="modal-body py-3">
+            <div id="modal-edit-name-alert"></div>
+            <input type="hidden" id="edit-student-id">
+
+            <div class="p-3 bg-light rounded-3 mb-3 border">
+              <div class="text-muted small mb-2 fw-semibold">Current Student Information:</div>
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-muted small">Current Name:</span>
+                <strong id="display-current-name" class="text-dark">Student Name</strong>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-muted small">Student ID / USN:</span>
+                <span id="display-student-usn" class="badge bg-secondary font-monospace">USN</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Email:</span>
+                <span id="display-student-email" class="small text-muted">email</span>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="edit-new-name" class="form-label fw-semibold">New Student Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="edit-new-name" placeholder="Enter updated full name" required minlength="2">
+              <div class="form-text">Student ID / USN, email, and department will remain strictly unchanged.</div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="edit-name-submit-btn" class="btn btn-primary px-3">
+              <span id="edit-name-btn-text"><i class="bi bi-check2 me-1"></i> Update Name</span>
+              <span id="edit-name-btn-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Existing Member by Email -->
+  <div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="addMemberModalLabel">Add Existing Student by Email</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="add-member-form">
+          <div class="modal-body py-3">
+            <div id="modal-member-alert"></div>
+            <div class="mb-3">
+              <label for="member-email" class="form-label fw-semibold">Student's Registered Email</label>
+              <input type="email" class="form-control" id="member-email" placeholder="student@example.com" required>
+              <div class="form-text">The student must already have registered an account with this email.</div>
+            </div>
+            <div class="mb-3">
+              <label for="member-role" class="form-label fw-semibold">Role</label>
+              <select class="form-select" id="member-role">
+                <option value="MEMBER" selected>MEMBER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Add to Hostel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Record / Edit Contribution -->
+  <div class="modal fade" id="contributionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="contribModalLabel">Monthly Contribution</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="contribution-form">
+          <div class="modal-body py-3">
+            <div id="modal-contrib-alert"></div>
+            <input type="hidden" id="contrib-student-id">
+            <input type="hidden" id="contrib-record-id">
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold text-muted small">Student</label>
+              <div class="fw-bold fs-5" id="contrib-student-name">Student Name</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="contrib-amount" class="form-label fw-semibold">Contribution Amount (₹)</label>
+              <input type="number" step="0.01" class="form-control" id="contrib-amount" value="2000" min="1" required>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="contrib-paid-checkbox" checked>
+              <label class="form-check-label fw-semibold" for="contrib-paid-checkbox">Mark as Paid</label>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Contribution</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center mt-auto">
+    <div class="container">
+      <p class="mb-0 text-muted small">Hostel Expense Management System &bull; Local Development &bull; AWS EC2 Ready</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/members.js"></script>
+</body>
+</html>

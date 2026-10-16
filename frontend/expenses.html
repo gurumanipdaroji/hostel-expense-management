@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expenses - Hostel Expense Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Reusable Navigation Bar -->
+  <div id="navbar-container"></div>
+
+  <main class="py-4">
+    <div class="container-fluid px-lg-4">
+
+      <div id="alert-container"></div>
+
+      <!-- Header with Current Available Common Balance and Add Button -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 bg-white p-3 p-md-4 rounded-4 border shadow-sm">
+        <div>
+          <h3 class="fw-bold mb-1">Hostel Expenses</h3>
+          <p class="text-muted small mb-0">Record items bought with Common Money or paid out-of-pocket by members.</p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="text-end d-none d-sm-block">
+            <span class="small text-muted text-uppercase fw-semibold d-block">Available Common Fund</span>
+            <span class="fs-4 fw-bold text-success" id="expense-page-common-balance">₹0.00</span>
+          </div>
+          <button class="btn btn-primary px-3 py-2 fw-semibold" onclick="openAddExpenseModal()">
+            <i class="bi bi-plus-circle me-1"></i> Add Expense
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters Bar -->
+      <div class="card border-0 shadow-sm rounded-4 p-3 mb-4">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-3">
+            <label for="filter-category" class="form-label small text-muted fw-semibold mb-1">Filter by Category</label>
+            <select class="form-select form-select-sm" id="filter-category">
+              <option value="">All Categories</option>
+              <option value="Food">Food</option>
+              <option value="Groceries">Groceries</option>
+              <option value="Electricity">Electricity</option>
+              <option value="Gas">Gas</option>
+              <option value="Water">Water</option>
+              <option value="Cleaning">Cleaning</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="filter-student" class="form-label small text-muted fw-semibold mb-1">Filter by Student</label>
+            <select class="form-select form-select-sm" id="filter-student">
+              <option value="">All Students</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="filter-source" class="form-label small text-muted fw-semibold mb-1">Payment Source</label>
+            <select class="form-select form-select-sm" id="filter-source">
+              <option value="">All Sources</option>
+              <option value="COMMON_MONEY">Common Money</option>
+              <option value="PERSONAL_MONEY">Personal Money</option>
+            </select>
+          </div>
+
+          <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-outline-secondary btn-sm w-100 mt-md-4" onclick="resetFilters()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expenses Table Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Expense Records (<span id="expense-count">0</span>)</h5>
+          <div class="small text-muted">
+            Total Spent: <strong class="text-dark" id="total-filtered-spent">₹0.00</strong>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Paid By</th>
+                <th>Payment Source</th>
+                <th class="text-end">Amount</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody id="expenses-table-body">
+              <tr>
+                <td colspan="7" class="text-center text-muted py-4">Loading expenses...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Add Expense -->
+  <div class="modal fade" id="addExpenseModal" tabindex="-1" aria-labelledby="addExpenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="addExpenseModalLabel">Record New Expense</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="add-expense-form">
+          <div class="modal-body py-3">
+            <div id="modal-expense-alert"></div>
+
+            <div class="mb-3">
+              <label for="exp-description" class="form-label fw-semibold">Description</label>
+              <input type="text" class="form-control" id="exp-description" placeholder="e.g. Rice, Milk, Electricity bill" required>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label for="exp-category" class="form-label fw-semibold">Category</label>
+                <select class="form-select" id="exp-category" required>
+                  <option value="Food" selected>Food</option>
+                  <option value="Groceries">Groceries</option>
+                  <option value="Electricity">Electricity</option>
+                  <option value="Gas">Gas</option>
+                  <option value="Water">Water</option>
+                  <option value="Cleaning">Cleaning</option>
+                  <option value="Maintenance">Maintenance</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label for="exp-amount" class="form-label fw-semibold">Amount (₹)</label>
+                <input type="number" step="0.01" class="form-control" id="exp-amount" placeholder="e.g. 1500" min="0.01" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="exp-paid-by" class="form-label fw-semibold">Paid By</label>
+              <select class="form-select" id="exp-paid-by" required>
+                <option value="">Select student who paid...</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold d-block">Payment Source</label>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="paymentSourceRadio" id="radioCommon" value="COMMON_MONEY" checked onchange="toggleSourceHelp()">
+                <label class="form-check-label fw-semibold" for="radioCommon">
+                  <span class="badge-common me-1">COMMON MONEY</span> Paid from shared fund
+                </label>
+                <div class="small text-muted ms-4">Directly reduces common balance. Must be &le; current available fund.</div>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="paymentSourceRadio" id="radioPersonal" value="PERSONAL_MONEY" onchange="toggleSourceHelp()">
+                <label class="form-check-label fw-semibold" for="radioPersonal">
+                  <span class="badge-personal me-1">PERSONAL MONEY</span> Paid from student's own pocket
+                </label>
+                <div class="small text-muted ms-4">Common balance remains untouched. Student will receive this amount back during settlement.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="exp-date" class="form-label fw-semibold">Expense Date</label>
+              <input type="date" class="form-control" id="exp-date" required>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary px-4">Record Expense</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center mt-auto">
+    <div class="container">
+      <p class="mb-0 text-muted small">Hostel Expense Management System &bull; Local Development &bull; AWS EC2 Ready</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/expenses.js"></script>
+</body>
+</html>

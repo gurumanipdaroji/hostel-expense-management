@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostel Expense Management System</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Minimal Header -->
+  <header class="bg-white border-bottom py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-wallet2 text-primary fs-3 me-2"></i>
+        <span class="fs-5 fw-bold text-dark">Hostel Expense System</span>
+      </div>
+      <div>
+        <a href="login.html" class="btn btn-outline-primary btn-sm me-2">Login</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Banner -->
+    <section class="hero-section text-center">
+      <div class="container py-4">
+        <span class="badge bg-light text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
+          Smart Shared Living Finance
+        </span>
+        <h1 class="display-4 fw-bold mb-3">Hostel Expense Management & Settlement</h1>
+        <p class="lead mb-4 mx-auto" style="max-width: 750px; opacity: 0.95;">
+          A transparent way for hostel roommates to manage common monthly funds, track pocket expenses, and perform exact end-of-month student settlements without confusion.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="register.html" class="btn btn-light btn-lg px-4 fw-semibold text-primary shadow-sm">
+            <i class="bi bi-person-plus-fill me-1"></i> Create Account
+          </a>
+          <a href="login.html" class="btn btn-outline-light btn-lg px-4 fw-semibold">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Rules & Flow -->
+    <section class="py-5">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="fw-bold">How Shared Hostel Expenses Work</h2>
+          <p class="text-muted">Two clear payment sources designed for realistic student living</p>
+        </div>
+
+        <div class="row g-4">
+          <!-- Card 1: Common Money -->
+          <div class="col-md-6">
+            <div class="card h-100 border-0 shadow-sm p-4 rounded-4" style="border-top: 4px solid var(--success-color) !important;">
+              <div class="d-flex align-items-center mb-3">
+                <span class="badge-common me-2 fs-6"><i class="bi bi-cash-stack me-1"></i> TYPE 1</span>
+                <h4 class="mb-0 fw-bold">Common Money</h4>
+              </div>
+              <p class="text-muted">
+                At the start of the month, each member contributes equally (e.g. 5 students &times; ₹2,000 = ₹10,000) held by the <strong>Budget Holder</strong>.
+              </p>
+              <ul class="list-unstyled text-secondary">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Paid directly by the budget holder for hostel essentials.</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Directly reduces the <strong>Current Common Balance</strong>.</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>System strictly prevents expenses greater than available common funds.</li>
+              </ul>
+              <div class="bg-light p-3 rounded-3 mt-auto">
+                <small class="text-muted d-block">Example:</small>
+                <strong>Student A (Budget Holder) pays ₹1,500 for Rice.</strong>
+                <div class="text-success mt-1 fw-semibold">₹10,000 &minus; ₹1,500 = ₹8,500 Common Balance Remaining</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Personal Money -->
+          <div class="col-md-6">
+            <div class="card h-100 border-0 shadow-sm p-4 rounded-4" style="border-top: 4px solid var(--primary-color) !important;">
+              <div class="d-flex align-items-center mb-3">
+                <span class="badge-personal me-2 fs-6"><i class="bi bi-wallet-fill me-1"></i> TYPE 2</span>
+                <h4 class="mb-0 fw-bold">Personal Pocket Money</h4>
+              </div>
+              <p class="text-muted">
+                Any student can purchase things for the hostel using their own personal money on the spot.
+              </p>
+              <ul class="list-unstyled text-secondary">
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Common balance <strong>DOES NOT</strong> decrease.</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>System records amount owed to that student for reimbursement.</li>
+                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Budget holder settles each student's amount during monthly closing.</li>
+              </ul>
+              <div class="bg-light p-3 rounded-3 mt-auto">
+                <small class="text-muted d-block">Example:</small>
+                <strong>Student B spends ₹800 from own pocket for Vegetables.</strong>
+                <div class="text-primary mt-1 fw-semibold">Common Balance stays ₹8,500 | B will receive ₹800 at settlement</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settlement Example Summary -->
+        <div class="mt-5 p-4 rounded-4 bg-white border shadow-sm">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <h5 class="fw-bold mb-2"><i class="bi bi-calculator me-2 text-primary"></i>Transparent Monthly Settlement</h5>
+              <p class="text-muted mb-0">
+                Never confuse remaining common money with personal reimbursements owed. At the end of the month, see starting fund, common spent, remaining balance, and an exact student reimbursement checklist.
+              </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+              <a href="login.html" class="btn btn-primary px-4 py-2">
+                Open Dashboard <i class="bi bi-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center">
+    <div class="container">
+      <p class="mb-1 fw-semibold">Hostel Expense Management System</p>
+      <p class="text-muted small mb-0">Built for college students learning full-stack development &bull; Local &bull; GitHub &bull; AWS EC2 Ready</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // If already logged in, show direct dashboard link
+    if (getToken()) {
+      const links = document.querySelectorAll('a[href="login.html"], a[href="register.html"]');
+      links.forEach(l => {
+        l.href = "dashboard.html";
+        l.textContent = "Dashboard";
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settlement - Hostel Expense Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Reusable Navigation Bar -->
+  <div id="navbar-container"></div>
+
+  <main class="py-4">
+    <div class="container-fluid px-lg-4">
+
+      <div id="alert-container"></div>
+
+      <!-- Top Header -->
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <h3 class="fw-bold mb-0" id="settlement-month-title">Monthly Expense Settlement</h3>
+            <span class="badge bg-success" id="settlement-status-badge">ACTIVE</span>
+          </div>
+          <p class="text-muted small mb-0 mt-1">End-of-month reimbursement calculation between the Budget Holder and individual students.</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <select class="form-select form-select-sm" id="settlement-fund-selector" style="min-width: 170px;">
+            <option value="">Select Month</option>
+          </select>
+          <button class="btn btn-outline-danger btn-sm text-nowrap" id="close-fund-btn" onclick="toggleFundStatus()">
+            <i class="bi bi-lock me-1"></i> Close Month
+          </button>
+        </div>
+      </div>
+
+      <!-- 5 Summary KPI Metric Cards -->
+      <div class="row g-3 mb-4">
+        <!-- 1. Starting Budget -->
+        <div class="col-sm-6 col-lg">
+          <div class="stat-card h-100">
+            <div class="stat-icon bg-primary-subtle text-primary">
+              <i class="bi bi-piggy-bank"></i>
+            </div>
+            <div class="stat-value text-primary" id="set-starting-budget">₹0.00</div>
+            <div class="stat-label">Starting Budget</div>
+          </div>
+        </div>
+
+        <!-- 2. Common Money Expenses -->
+        <div class="col-sm-6 col-lg">
+          <div class="stat-card h-100">
+            <div class="stat-icon bg-danger-subtle text-danger">
+              <i class="bi bi-cart-x"></i>
+            </div>
+            <div class="stat-value text-danger" id="set-common-expenses">₹0.00</div>
+            <div class="stat-label">Total Common Expenses</div>
+          </div>
+        </div>
+
+        <!-- 3. Current Common Balance -->
+        <div class="col-sm-6 col-lg">
+          <div class="stat-card h-100" style="border-left: 4px solid var(--success-color);">
+            <div class="stat-icon bg-success-subtle text-success">
+              <i class="bi bi-cash"></i>
+            </div>
+            <div class="stat-value text-success" id="set-common-balance">₹0.00</div>
+            <div class="stat-label">Current Common Balance</div>
+          </div>
+        </div>
+
+        <!-- 4. Total Personal Expenses -->
+        <div class="col-sm-6 col-lg">
+          <div class="stat-card h-100">
+            <div class="stat-icon bg-info-subtle text-info">
+              <i class="bi bi-wallet"></i>
+            </div>
+            <div class="stat-value text-info" id="set-personal-expenses">₹0.00</div>
+            <div class="stat-label">Total Personal Expenses</div>
+          </div>
+        </div>
+
+        <!-- 5. Total Settlement Amount -->
+        <div class="col-sm-6 col-lg">
+          <div class="stat-card h-100" style="border-left: 4px solid var(--warning-color);">
+            <div class="stat-icon bg-warning-subtle text-warning">
+              <i class="bi bi-arrow-repeat"></i>
+            </div>
+            <div class="stat-value text-warning" id="set-settlement-amount">₹0.00</div>
+            <div class="stat-label">Total Settlement Owed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settlement Explanation Callout -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background-color: #f8fafc; border-left: 5px solid var(--primary-color) !important;">
+        <div class="d-flex align-items-start gap-3">
+          <i class="bi bi-shield-check text-primary fs-2"></i>
+          <div>
+            <h5 class="fw-bold mb-1">Settlement Workflow Guide</h5>
+            <p class="text-muted mb-2">
+              <strong>Budget Holder (<span id="guide-holder-name">Student</span>)</strong> holds the current common fund of <strong class="text-success" id="guide-common-balance">₹0.00</strong>.
+            </p>
+            <p class="small text-muted mb-0">
+              During the month, students who paid for hostel groceries or utilities out of their own pockets are owed reimbursements. The Budget Holder transfers the exact amount to each student. After reimbursing all personal expenses, the net leftover common money will be <strong class="text-primary" id="guide-net-remaining">₹0.00</strong> (which can be carried forward or refunded).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Settlement Breakdown Table -->
+      <div class="card border-0 shadow-sm rounded-4 p-4">
+        <h5 class="fw-bold mb-3">Student Reimbursement Breakdown</h5>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Student</th>
+                <th>Role</th>
+                <th>Personal Out-of-Pocket Expenses</th>
+                <th>Amount to Receive</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="settlement-students-body">
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">Calculating settlement...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="text-center mt-auto">
+    <div class="container">
+      <p class="mb-0 text-muted small">Hostel Expense Management System &bull; Local Development &bull; AWS EC2 Ready</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/settlement.js"></script>
+</body>
+</html>

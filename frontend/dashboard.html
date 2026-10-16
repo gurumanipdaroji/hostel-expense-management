@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Hostel Expense Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation bar container rendered dynamically -->
+  <div id="navbar-container"></div>
+
+  <main class="py-4">
+    <div class="container-fluid px-lg-4">
+
+      <div id="alert-container"></div>
+
+      <!-- No Hostel State Warning (shown if user is not in any hostel) -->
+      <div id="no-hostel-banner" class="card border-0 shadow-sm p-4 text-center rounded-4 mb-4 d-none">
+        <div class="py-3">
+          <i class="bi bi-building-add text-primary display-4"></i>
+          <h4 class="fw-bold mt-3">Welcome to Hostel Expense Management!</h4>
+          <p class="text-muted">You are not a member of any hostel yet. Create a new hostel to get started, or ask your hostel admin to add you using your registered email.</p>
+          <button class="btn btn-primary px-4 py-2" onclick="openCreateHostelModal()">
+            <i class="bi bi-plus-circle me-1"></i> Create Your Hostel
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Dashboard Content -->
+      <div id="dashboard-content" class="d-none">
+
+        <!-- Top Header & Fund Selector Bar -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 bg-white p-3 rounded-4 border shadow-sm">
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h3 class="fw-bold mb-0" id="fund-title">Hostel Dashboard</h3>
+              <span class="badge bg-success" id="fund-status-badge">ACTIVE</span>
+            </div>
+            <p class="text-muted small mb-0 mt-1">
+              Budget Holder: <strong class="text-dark" id="budget-holder-name">Loading...</strong> 
+              <span class="badge badge-holder ms-1">Holds Common Fund</span>
+            </p>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <select class="form-select form-select-sm" id="fund-selector" style="min-width: 170px;">
+              <option value="">Select Month</option>
+            </select>
+            <button class="btn btn-outline-primary btn-sm text-nowrap" onclick="openCreateFundModal()">
+              <i class="bi bi-calendar-plus me-1"></i> New Month
+            </button>
+            <a href="expenses.html?action=add" class="btn btn-primary btn-sm text-nowrap">
+              <i class="bi bi-plus-circle me-1"></i> Add Expense
+            </a>
+          </div>
+        </div>
+
+        <!-- 6 Metrics / KPI Cards -->
+        <div class="row g-3 mb-4">
+          <!-- Card 1: Total Starting Budget -->
+          <div class="col-sm-6 col-xl-2">
+            <div class="stat-card h-100">
+              <div class="stat-icon bg-primary-subtle text-primary">
+                <i class="bi bi-cash-stack"></i>
+              </div>
+              <div class="stat-value text-primary" id="card-total-budget">₹0.00</div>
+              <div class="stat-label">Monthly Budget</div>
+            </div>
+          </div>
+
+          <!-- Card 2: Current Common Balance -->
+          <div class="col-sm-6 col-xl-2">
+            <div class="stat-card h-100" style="border-left: 4px solid var(--success-color);">
+              <div class="stat-icon bg-success-subtle text-success">
+                <i class="bi bi-wallet2"></i>
+              </div>
+              <div class="stat-value text-success" id="card-common-balance">₹0.00</div>
+              <div class="stat-label">Current Common Balance</div>
+            </div>
+          </div>
+
+          <!-- Card 3: Common Money Spent -->
+          <div class="col-sm-6 col-xl-2">
+            <div class="stat-card h-100">
+              <div class="stat-icon bg-danger-subtle text-danger">
+                <i class="bi bi-cart-check"></i>
+              </div>
+              <div class="stat-value text-danger" id="card-common-spent">₹0.00</div>
+              <div class="stat-label">Common Money Spent</div>
+            </div>
+          </div>
+
+          <!-- Card 4: Personal Money Expenses -->
+          <div class="col-sm-6 col-xl-2">
+            <div class="stat-card h-100">
+              <div class="stat-icon bg-info-subtle text-info">
+                <i class="bi bi-person-fill-down"></i>
+              </div>
+              <div class="stat-value text-info" id="card-personal-spent">₹0.00</div>
+              <div class="stat-label">Personal Expenses</div>
+            </div>
+          </div>
+
+          <!-- Card 5: Settlement Pending -->
+          <div class="col-sm-6 col-xl-2">
+            <div class="stat-card h-100" style="border-left: 4px solid var(--warning-color);">
+              <div class="stat-icon bg-warning-subtle text-warning">
+                <i class="bi bi-arrow-left-right"></i>
+              </div>
+              <div class="stat-value text-warning" id="card-settlement-pending">₹0.00</div>
+              <div class="stat-label">Settlement Pending</div>
+            </div>
+          </div>
+
+          <!-- Card 6: Members -->
+          <div class="col-sm-6 col-xl-2">
+            <div class="stat-card h-100">
+              <div class="stat-icon bg-secondary-subtle text-secondary">
+                <i class="bi bi-people"></i>
+              </div>
+              <div class="stat-value text-dark" id="card-member-count">0</div>
+              <div class="stat-label" id="card-member-paid-status">0 of 0 Paid</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Recent Expenses & Member Status -->
+        <div class="row g-4">
+          <!-- Recent Expenses Table -->
+          <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-md-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Recent Expenses</h5>
+                <a href="expenses.html" class="btn btn-outline-primary btn-sm">View All Expenses</a>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Date</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>Paid By</th>
+                      <th>Payment Source</th>
+                      <th class="text-end">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recent-expenses-body">
+                    <tr>
+                      <td colspan="6" class="text-center text-muted py-4">Loading expenses...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Members & Contributions Card -->
+          <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3 p-md-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Hostel Members</h5>
+                <a href="members.html" class="btn btn-outline-secondary btn-sm">Manage</a>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Student</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                      <th class="text-end">Fund</th>
+                    </tr>
+                  </thead>
+                  <tbody id="members-list-body">
+                    <tr>
+                      <td colspan="4" class="text-center text-muted py-4">Loading members...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="mt-3 p-3 rounded-3 bg-light border small text-muted">
+                <i class="bi bi-info-circle me-1 text-primary"></i>
+                <strong>Notice:</strong> To view the exact reimbursement breakdown for members who paid out-of-pocket, visit the <a href="settlement.html" class="text-primary fw-semibold">Settlement Page</a>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal: Create New Hostel -->
+  <div class="modal fade" id="createHostelModal" tabindex="-1" aria-labelledby="createHostelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="createHostelModalLabel">Create New Hostel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="create-hostel-form">
+          <div class="modal-body py-3">
+            <div id="modal-hostel-alert"></div>
+            <div class="mb-3">
+              <label for="new-hostel-name" class="form-label fw-semibold">Hostel Name</label>
+              <input type="text" class="form-control" id="new-hostel-name" placeholder="e.g. NIE Boys Hostel" required>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Hostel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Create New Monthly Fund -->
+  <div class="modal fade" id="createFundModal" tabindex="-1" aria-labelledby="createFundModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="createFundModalLabel">Create Monthly Fund</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="create-fund-form">
+          <div class="modal-body py-3">
+            <div id="modal-fund-alert"></div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-7">
+                <label for="fund-month" class="form-label fw-semibold">Month</label>
+                <select class="form-select" id="fund-month" required>
+                  <option value="January">January</option>
+                  <option value="February">February</option>
+                  <option value="March">March</option>
+                  <option value="April">April</option>
+                  <option value="May">May</option>
+                  <option value="June">June</option>
+                  <option value="July">July</option>
+                  <option value="August">August</option>
+                  <option value="September">September</option>
+                  <option value="October" selected>October</option>
+                  <option value="November">November</option>
+                  <option value="December">December</option>
+                </select>
+              </div>
+              <div class="col-5">
+                <label for="fund-year" class="form-label fw-semibold">Year</label>
+                <input type="number" class="form-control" id="fund-year" value="2026" min="2020" max="2035" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="fund-budget-holder" class="form-label fw-semibold">Budget Holder</label>
+              <select class="form-select" id="fund-budget-holder" required>
+                <option value="">Select a member...</option>
+              </select>
+              <div class="form-text">This student temporarily holds the common monthly fund.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="fund-per-student" class="form-label fw-semibold">Per-Student Monthly Contribution (₹)</label>
+              <input type="number" step="0.01" class="form-control" id="fund-per-student" placeholder="e.g. 2000" value="2000" required min="1">
+              <div class="form-text">Total budget will automatically be calculated (Number of Members &times; Contribution).</div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Start Monthly Fund</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center mt-auto">
+    <div class="container">
+      <p class="mb-0 text-muted small">Hostel Expense Management System &bull; Local Development &bull; AWS EC2 Ready</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
